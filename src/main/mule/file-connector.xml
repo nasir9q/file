@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="0a507737-99cb-4fb7-b528-7e4693c57054" >
+		<http:listener-connection host="localhost" port="8089" />
+	</http:listener-config>
+	<file:config name="File_Config" doc:name="File Config" doc:id="fee48d2f-5951-4b30-97b0-60a305127f8b" />
+	<flow name="file-connectorFlow" doc:id="3f88acb5-ccb7-4692-b364-dadd0b6ccabc" >
+		<http:listener doc:name="Listener" doc:id="059fd700-adcf-4f2b-8e5f-94a2665f0d52" config-ref="HTTP_Listener_config" path="/first"/>
+		<ee:transform doc:name="Transform Message" doc:id="a4c4f32c-a996-4a11-8798-fdc34a340e0f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<file:write doc:name="Write" doc:id="f46b1984-096e-499c-8291-a12a822befbf" config-ref="File_Config" path="C:\Users\nasir\AnypointStudio\studio-workspace\file-connector\src\main\resources\write"/>
+		<logger level="INFO" doc:name="Logger" doc:id="685f40ac-324b-409d-846a-c9dd246ab3af" message="#[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="a108217e-6f50-4905-9d05-182121868d44">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message:"file has been updated successfully"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
